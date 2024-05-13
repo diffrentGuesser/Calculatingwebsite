@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1f1f1f;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            margin-top: 5px;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        #fitness-plan {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Calculate</h1>
+        <div class="input-group">
+            <label for="weight">Weight (kg):</label>
+            <input type="number" id="weight" name="weight" required>
+        </div>
+        <div class="input-group">
+            <label for="height">Height (cm):</label>
+            <input type="number" id="height" name="height" required>
+        </div>
+        <div class="input-group">
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required>
+        </div>
+        <div class="input-group">
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+        </div>
+        <button class="btn" onclick="generatePlan()">Calculate mesurements</button>
+
+        <div id="fitness-plan"></div>
+    </div>
+
+    <script>
+        function generatePlan() {
+            var weight = parseFloat(document.getElementById("weight").value);
+            var height = parseFloat(document.getElementById("height").value);
+            var age = parseInt(document.getElementById("age").value);
+            var gender = document.getElementById("gender").value;
+
+            if (isNaN(weight) || isNaN(height) || isNaN(age)) {
+                alert("Please enter valid weight, height, and age.");
+                return;
+            }
+
+            var bmi = calculateBMI(weight, height);
+            var sizeForAge = calculateSizeForAge(height, age, gender);
+            var plan = generateFitnessPlan(bmi, sizeForAge, gender);
+
+            document.getElementById("fitness-plan").innerHTML = plan;
+        }
+
+        function calculateBMI(weight, height) {
+            return weight / ((height / 100) * (height / 100));
+        }
+
+        function calculateSizeForAge(height, age, gender) {
+            var adjustedAge = age > 16.5 ? 16.5 : age; // If age is higher than 16.5, use 16.5 for comparison
+            var heightRanges = [
+        { age: 0, male: [49.0, 50.8], female: [48.2, 50.0] },
+        { age: 0.5, male: [52.0, 53.8], female: [51.2, 53.0] },
+        { age: 1, male: [55.1, 58.3], female: [54.3, 57.5] },
+        { age: 1.5, male: [57.7, 61.0], female: [56.9, 60.3] },
+        { age: 2, male: [60.4, 63.8], female: [59.6, 63.2] },
+        { age: 2.5, male: [62.9, 66.5], female: [62.1, 65.7] },
+        { age: 3, male: [65.4, 69.0], female: [64.6, 68.4] },
+        { age: 3.5, male: [67.5, 71.5], female: [66.7, 70.7] },
+        { age: 4, male: [69.6, 73.2], female: [68.8, 72.4] },
+        { age: 4.5, male: [71.3, 76.3], female: [70.5, 75.5] },
+        { age: 5, male: [73.0, 77.0], female: [72.1, 76.1] },
+        { age: 5.5, male: [74.5, 79.5], female: [73.6, 78.6] },
+        { age: 6, male: [76.1, 80.3], female: [75.2, 79.4] },
+        { age: 6.5, male: [77.5, 82.5], female: [76.6, 81.6] },
+        { age: 7, male: [78.8, 83.0], female: [77.9, 82.1] },
+        { age: 7.5, male: [80.0, 85.0], female: [79.1, 84.1] },
+        { age: 8, male: [81.2, 85.4], female: [80.4, 84.6] },
+        { age: 8.5, male: [82.3, 87.3], female: [81.4, 86.4] },
+        { age: 9, male: [83.3, 87.7], female: [82.4, 86.8] },
+        { age: 9.5, male: [84.3, 89.3], female: [83.4, 88.4] },
+        { age: 10, male: [85.2, 89.6], female: [84.2, 88.9] },
+        { age: 10.5, male: [86.0, 90.8], female: [85.1, 89.9] },
+        { age: 11, male: [136.6, 140.2], female: [136.4, 140.0] },
+        { age: 11.5, male: [141.8, 144.2], female: [141.7, 144.1] },
+        { age: 12, male: [145.3, 148.7], female: [145.3, 148.7] },
+        { age: 12.5, male: [149.6, 152.4], female: [149.6, 152.4] },
+        { age: 13, male: [153.7, 157.1], female: [153.0, 156.4] },
+        { age: 13.5, male: [157.6, 160.6], female: [156.9, 159.9] },
+        { age: 14, male: [161.8, 165.2], female: [161.0, 164.4] },
+        { age: 14.5, male: [165.0, 168.6], female: [164.3, 167.9] },
+        { age: 15, male: [169.6, 173.0], female: [168.3, 171.7] },
+        { age: 15.5, male: [172.9, 176.5], female: [171.5, 175.1] },
+        { age: 16, male: [176.9, 180.1], female: [174.3, 177.5] },
+        { age: 16.5, male: [179.8, 183.2], female: [177.0, 180.4] },
+    ];
+
+            var sizeForAge = "";
+            for (var i = 0; i < heightRanges.length; i++) {
+                if (adjustedAge === heightRanges[i].age) {
+                    var maleRange = heightRanges[i].male;
+                    var femaleRange = heightRanges[i].female;
+                    var isMale = gender === 'male';
+                    var lowerLimit = isMale ? maleRange[0] : femaleRange[0];
+                    var upperLimit = isMale ? maleRange[1] : femaleRange[1];
+
+                    if (height < lowerLimit) {
+                        sizeForAge = "You are below average size for your age.";
+                    } else if (height > upperLimit) {
+                        sizeForAge = "You are above average size for your age.";
+                    } else {
+                        sizeForAge = "Your height is average for your age.";
+                    }
+                    break;
+                }
+            }
+            return sizeForAge;
+        }
+
+        function generateFitnessPlan(bmi, sizeForAge, gender) {
+            var plan = "";
+            if (bmi < 18.5) {
+                plan += "Your BMI is " + bmi.toFixed(2) + ". You are underweight. Please focus on a balanced diet and regular exercise.\n";
+            } else if (bmi >= 18.5 && bmi < 25) {
+                plan += "Your BMI is " + bmi.toFixed(2) + ". You have a normal weight. Maintain a balanced diet and regular exercise routine.\n";
+            } else if (bmi >= 25 && bmi < 30) {
+                plan += "Your BMI is " + bmi.toFixed(2) + ". You are overweight. Consider reducing calorie intake and increase physical activity.\n";
+            } else {
+                plan += "Your BMI is " + bmi.toFixed(2) + ". You are obese. Consult with a healthcare professional for a personalized plan.\n";
+            }
+
+            if (gender === 'male') {
+                plan += "For men, it's recommended to focus on strength training and protein-rich diet.\n";
+            } else {
+                plan += "For women, it's recommended to focus on cardio exercises and balanced nutrition.\n";
+            }
+
+            plan += sizeForAge;
+
+            return plan;
+        }
+    </script>
+</body>
+
+</html>
